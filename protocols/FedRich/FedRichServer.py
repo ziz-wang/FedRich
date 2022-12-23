@@ -45,15 +45,14 @@ class FedRichServer(Server):
         for model in split_models:
             client_models.append(model[0])
             self.mediator_models.append(model[1])
-        if config_args.keep_bn:
-            if config_args.redundant_forward:
-                for layer_index, client_model in enumerate(client_models):
-                    layers = []
-                    for layer in client_model.children():
-                        if isinstance(layer, nn.BatchNorm2d):
-                            layer.momentum = 1
-                        layers += [layer]
-                    client_models[layer_index] = nn.Sequential(*layers)
+        if config_args.redundant_forward:
+            for layer_index, client_model in enumerate(client_models):
+                layers = []
+                for layer in client_model.children():
+                    if isinstance(layer, nn.BatchNorm2d):
+                        layer.momentum = 1
+                    layers += [layer]
+                client_models[layer_index] = nn.Sequential(*layers)
             self.client_models = client_models
         else:
             for client_model in client_models:
