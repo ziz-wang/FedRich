@@ -18,7 +18,7 @@ class FedRichClient(Client):
         for batch, (X, y) in enumerate(self.local_dataloader):
             if batch % self.batches == self.participating_round % self.batches:
                 X.requires_grad_(True)
-                if config_args.keep_bn and config_args.redundant_forward:
+                if config_args.redundant_forward:
                     self.local_model.apply(self._fix_bn)
                 self.output = checkpoint(self.local_model, X.to(config_args.device))
                 if config_args.feature_memo:
@@ -42,7 +42,7 @@ class FedRichClient(Client):
         local_optimizer.step()
 
         # update bn
-        if config_args.keep_bn and config_args.redundant_forward:
+        if config_args.redundant_forward:
             self.local_model.train()
             for batch, (X, y) in enumerate(self.local_dataloader):
                 if batch % self.batches == self.participating_round % self.batches:
